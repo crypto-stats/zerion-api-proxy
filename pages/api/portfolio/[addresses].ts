@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       zerion.getPortfolio(addresses),
     ])
 
-    res.setHeader('Cache-Control', 'max-age=60, s-maxage=${ONE_HOUR}, stale-while-revalidate');
+    res.setHeader('Cache-Control', `s-maxage=${2 * ONE_HOUR}, stale-while-revalidate=${12 * ONE_HOUR}`);
     res.json({ success: true, statusCode: 200, value: { totalValue, portfolio } })
   } catch (err) {
     res.status(500).json({ success: false, statusCode: 500, message: err.message })
