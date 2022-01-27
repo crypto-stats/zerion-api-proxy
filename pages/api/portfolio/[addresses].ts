@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Zerion } from 'zerion'
+import { Zerion } from 'lib/zerion'
 
 const ONE_HOUR = 60 * 60 * 1000
 

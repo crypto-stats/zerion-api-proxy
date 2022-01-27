@@ -1,17 +1,16 @@
 import io from 'socket.io-client'
+import { deepEqual } from './deep-equal';
 
 const BASE_URL = 'wss://api-v4.zerion.io/'
 
 function verify(request: any, response: any) {
-  // each value in request payload must be found in response meta
-  return Object.keys(request.payload).every(key => {
-    const requestValue = request.payload[key]
-    const responseMetaValue = response.meta[key]
-    if (typeof requestValue === 'object') {
-      return JSON.stringify(requestValue) === JSON.stringify(responseMetaValue)
+  for (const key in request.payload) {
+    if (!deepEqual(request.payload[key], response.meta[key])) {
+      console.log('fail', request.payload[key], response.meta[key], request, response)
+      return false
     }
-    return responseMetaValue === requestValue
-  });
+  }
+  return true
 }
 
 const assetsSocket = {
@@ -53,7 +52,7 @@ function get(socketNamespace: any, requestBody: any) {
 
     setTimeout(() => {
       if (waiting) {
-        console.error(requestBody)
+        console.error('rejected', requestBody)
         reject(new Error('Request timed out'))
       }
     }, 10000)
@@ -71,7 +70,6 @@ export class Zerion {
       payload: {
         ...payload,
         currency: 'usd',
-        portfolio_fields: 'all',
         // offset: 0,
         // limit: 20,
       },
