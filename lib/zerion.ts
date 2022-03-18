@@ -4,6 +4,12 @@ import { deepEqual } from './deep-equal';
 const BASE_URL = 'wss://api-v4.zerion.io/'
 
 function verify(request: any, response: any) {
+  if (response.meta.status === 'error') {
+    for (const error of response.payload.errors) {
+      console.error(error);
+    }
+  }
+
   for (const key in request.payload) {
     if (!deepEqual(request.payload[key], response.meta[key])) {
       console.log('fail', request.payload[key], response.meta[key], request, response)
@@ -84,21 +90,21 @@ export class Zerion {
       : { address: address.toString().toLowerCase() }
 
     const response: any = await get(assetsSocket, {
-      scope: ['assets'],
+      scope: ['positions'],
       payload,
     })
 
-    const result = Object.values(response.payload.assets)
-      .map((asset: any) => ({
-        address: asset.asset.asset_code,
-        amount: asset.quantity / (10 ** asset.asset.decimals),
-        name: asset.asset.name,
-        symbol: asset.asset.symbol,
-        icon: asset.asset.icon_url,
-        price: asset.asset.price?.value,
-        value: asset.quantity / (10 ** asset.asset.decimals) * (asset.asset.price?.value || 0),
+    const result = response.payload.positions.positions
+      .map((position: any) => ({
+        address: position.asset.asset_code,
+        amount: position.quantity / (10 ** position.asset.decimals),
+        name: position.asset.name,
+        symbol: position.asset.symbol,
+        icon: position.asset.icon_url,
+        price: position.asset.price?.value,
+        value: position.quantity / (10 ** position.asset.decimals) * (position.asset.price?.value || 0),
       }))
-      .filter((asset: any) => !!asset.price)
+      .filter((position: any) => !!position.price)
     return result
   }
 }
