@@ -27,7 +27,7 @@ const assetsSocket = {
     query: {
       api_token:
         process.env.ZERION_API_KEY_V4 ||
-        'Zerion.oSQAHALTonDN9HYZiYSX5k6vnm4GZNc',
+        'Zerion.oSQAHALTonDN9HYZiYSX5k6vnm4GZNcM',
     },
     // @ts-ignore
     extraHeaders: {
